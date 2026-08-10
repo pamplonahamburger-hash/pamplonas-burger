@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://pamplonas-burger.pamplonahamburger.workers.dev/sitemap.xml
