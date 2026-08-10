@@ -1,0 +1,144 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Poppins,sans-serif;
+}
+
+body{
+    background:#111;
+    color:#fff;
+}
+
+.topo{
+
+    background:#181818;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:20px 40px;
+
+    border-bottom:1px solid #333;
+
+}
+
+.topo h1{
+
+    color:#F4B400;
+    font-size:30px;
+
+}
+
+.topo button{
+
+    background:#D62828;
+    color:#fff;
+
+    border:none;
+
+    padding:14px 24px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-size:16px;
+    font-weight:600;
+
+}
+
+.topo button:hover{
+
+    background:#F4B400;
+    color:#111;
+
+}
+
+.conteudo{
+
+    width:min(1400px,95%);
+    margin:40px auto;
+
+}
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:#1b1b1d;
+
+    border-radius:15px;
+
+    overflow:hidden;
+
+}
+
+th{
+
+    background:#222;
+
+    padding:18px;
+
+    color:#F4B400;
+
+    text-align:left;
+
+}
+
+td{
+
+    padding:15px;
+
+    border-bottom:1px solid #333;
+
+}
+
+tr:hover{
+
+    background:#252525;
+
+}
+
+td img{
+
+    width:70px;
+    height:70px;
+
+    object-fit:cover;
+
+    border-radius:10px;
+
+}
+
+td button{
+
+    border:none;
+
+    cursor:pointer;
+
+    padding:8px 10px;
+
+    border-radius:8px;
+
+    margin-right:8px;
+
+    font-size:18px;
+
+}
+
+td button:first-child{
+
+    background:#F4B400;
+
+}
+
+td button:last-child{
+
+    background:#D62828;
+    color:white;
+
+}

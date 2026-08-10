@@ -1,0 +1,195 @@
+/* ===========================
+   TABLETS
+=========================== */
+
+@media (max-width:1024px){
+
+.hero-grid{
+
+    grid-template-columns:1fr;
+    text-align:center;
+
+}
+
+.hero-image{
+
+    order:-1;
+
+}
+
+.cards{
+
+    grid-template-columns:repeat(2,1fr);
+
+}
+
+nav{
+
+    gap:20px;
+
+}
+
+.hero h1{
+
+    font-size:48px;
+
+}
+
+}
+
+
+/* ===========================
+   CELULARES
+=========================== */
+
+@media (max-width:768px){
+
+header{
+
+    position:relative;
+
+}
+
+.header-content{
+
+    flex-direction:column;
+
+    height:auto;
+
+    padding:20px 0;
+
+    gap:20px;
+
+}
+
+nav{
+
+    flex-wrap:wrap;
+
+    justify-content:center;
+
+}
+
+.logo{
+
+    font-size:26px;
+
+}
+
+.hero{
+
+    padding:50px 0;
+
+    min-height:auto;
+
+}
+
+.hero h1{
+
+    font-size:38px;
+
+}
+
+.hero p{
+
+    font-size:18px;
+
+}
+
+.hero-buttons{
+
+    justify-content:center;
+
+}
+
+.cards{
+
+    grid-template-columns:1fr;
+
+}
+
+.products{
+
+    grid-template-columns:1fr;
+
+}
+
+.menu h2,
+.about h2,
+.contact h2{
+
+    font-size:32px;
+
+}
+
+.product img{
+
+    height:220px;
+
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-header{
+
+    width:100%;
+    text-align:center;
+
+}
+
+.whatsapp-float{
+
+    width:60px;
+    height:60px;
+    font-size:28px;
+
+}
+
+}
+
+
+/* ===========================
+   CELULARES PEQUENOS
+=========================== */
+
+@media (max-width:480px){
+
+.container{
+
+    width:94%;
+
+}
+
+.hero h1{
+
+    font-size:32px;
+
+}
+
+.hero p{
+
+    font-size:16px;
+
+}
+
+.tag{
+
+    font-size:13px;
+
+}
+
+#pesquisa{
+
+    font-size:16px;
+
+    padding:18px;
+
+}
+
+.product span{
+
+    font-size:24px;
+
+}
+
+}

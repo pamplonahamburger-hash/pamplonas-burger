@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Painel Administrativo</title>
+
+<link rel="stylesheet" href="css/admin.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+<header class="topo">
+
+    <h1>🍔 Painel Pamplona's Burger</h1>
+
+    <button id="novoProduto">
+
+        + Novo Produto
+
+    </button>
+
+</header>
+
+<main class="conteudo">
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>Imagem</th>
+
+                <th>Nome</th>
+
+                <th>Categoria</th>
+
+                <th>Preço</th>
+
+                <th>Disponível</th>
+
+                <th>Destaque</th>
+
+                <th>Ações</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody id="listaProdutos">
+
+        </tbody>
+
+    </table>
+
+</main>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/dashboard.js"></script>
+
+</body>
+
+</html>
