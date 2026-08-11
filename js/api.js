@@ -3,29 +3,51 @@
 // ==========================================
 
 const API_URL =
-"https://script.google.com/macros/s/AKfycbw5jFPujmLMWDt7VzGlppmja1IHCLtQQzwUoWucgSHpZcTfJepJhGCXEpWJsSDb_IwhUA/exec";
+    "https://script.google.com/macros/s/AKfycbw5jFPujmLMWDt7VzGlppmja1IHCLtQQzwUoWucgSHpZcTfJepJhGCXEpWJsSDb_IwhUA/exec";
+
 
 // ==========================================
 // BUSCAR PRODUTOS
-// ==========================================
-
-// ==========================================
-// CONFIGURAÇÃO DA API
 // ==========================================
 
 async function buscarProdutos() {
 
     try {
 
-        const resposta = await fetch(CONFIG.API);
+        const resposta = await fetch(
+            API_URL + "?acao=listar"
+        );
 
-        const produtos = await resposta.json();
+        if (!resposta.ok) {
 
-        return produtos;
+            throw new Error(
+                "Erro HTTP: " + resposta.status
+            );
+
+        }
+
+        const dados = await resposta.json();
+
+        // A API pública retorna diretamente o array
+        if (Array.isArray(dados)) {
+
+            return dados;
+
+        }
+
+        console.error(
+            "Resposta inesperada da API:",
+            dados
+        );
+
+        return [];
 
     } catch (erro) {
 
-        console.error("Erro ao buscar produtos:", erro);
+        console.error(
+            "Erro ao buscar produtos:",
+            erro
+        );
 
         return [];
 

@@ -1,28 +1,61 @@
-// ===============================
+// ==========================================
+// PROTEÇÃO DO PAINEL
+// ==========================================
+
+const tokenAdmin = localStorage.getItem("tokenAdmin");
+
+if (!tokenAdmin) {
+
+    window.location.href = "admin.html";
+
+}
+
+
+// ==========================================
 // DASHBOARD
-// ===============================
+// ==========================================
 
 async function carregarProdutos() {
 
-    const tbody = document.getElementById("listaProdutos");
+    const tbody =
+        document.getElementById("listaProdutos");
 
     tbody.innerHTML = `
         <tr>
-            <td colspan="7">Carregando...</td>
+            <td colspan="7">
+                Carregando...
+            </td>
         </tr>
     `;
 
     try {
 
-        const produtos = await buscarProdutos();
+        const produtos =
+            await buscarProdutos();
 
         tbody.innerHTML = "";
 
+        if (!produtos.length) {
+
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7">
+                        Nenhum produto encontrado.
+                    </td>
+                </tr>
+            `;
+
+            return;
+
+        }
+
         produtos.forEach((produto, indice) => {
 
-            let imagem = produto.Imagem || "";
+            let imagem =
+                produto.Imagem || "";
 
-            const linha = document.createElement("tr");
+            const linha =
+                document.createElement("tr");
 
             linha.innerHTML = `
 
@@ -30,34 +63,50 @@ async function carregarProdutos() {
 
                     <img
                         src="${imagem}"
+                        alt="${produto.Nome || "Produto"}"
                         style="
                             width:70px;
                             height:70px;
                             object-fit:cover;
                             border-radius:10px;
-                        ">
+                        "
+                    >
 
                 </td>
 
-                <td>${produto.Nome}</td>
+                <td>
+                    ${produto.Nome || ""}
+                </td>
 
-                <td>${produto.Categoria}</td>
+                <td>
+                    ${produto.Categoria || ""}
+                </td>
 
-                <td>R$ ${produto.Preço}</td>
+                <td>
+                    R$ ${produto.Preço || "0,00"}
+                </td>
 
-                <td>${produto["Disponível"]}</td>
+                <td>
+                    ${produto["Disponível"] || ""}
+                </td>
 
-                <td>${produto.Destaque}</td>
+                <td>
+                    ${produto.Destaque || ""}
+                </td>
 
                 <td>
 
-                    <button onclick="editar(${indice})">
+                    <button
+                        type="button"
+                        onclick="editar(${indice})">
 
                         ✏️
 
                     </button>
 
-                    <button onclick="excluir(${indice})">
+                    <button
+                        type="button"
+                        onclick="excluir(${indice})">
 
                         🗑️
 
@@ -71,9 +120,7 @@ async function carregarProdutos() {
 
         });
 
-    }
-
-    catch(e){
+    } catch (e) {
 
         console.error(e);
 
@@ -89,20 +136,45 @@ async function carregarProdutos() {
 
 }
 
-function editar(id){
 
-    alert("Editar produto " + id);
+// ==========================================
+// EDITAR
+// ==========================================
+
+function editar(id) {
+
+    alert(
+        "Editar produto " + id +
+        " será implementado em seguida."
+    );
 
 }
 
-function excluir(id){
 
-    if(confirm("Excluir este produto?")){
+// ==========================================
+// EXCLUIR
+// ==========================================
 
-        alert("Vamos implementar no próximo passo.");
+function excluir(id) {
+
+    if (!confirm("Excluir este produto?")) {
+
+        return;
 
     }
 
+    alert(
+        "A exclusão será implementada em seguida."
+    );
+
 }
 
-document.addEventListener("DOMContentLoaded", carregarProdutos);
+
+// ==========================================
+// INICIAR
+// ==========================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    carregarProdutos
+);

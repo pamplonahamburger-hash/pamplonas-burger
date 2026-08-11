@@ -1,54 +1,104 @@
-const API = "https://script.google.com/macros/s/AKfycbw5jFPujmLMWDt7VzGlppmja1IHCLtQQzwUoWucgSHpZcTfJepJhGCXEpWJsSDb_IwhUA/exec";
+// ==========================================
+// CONFIGURAÇÃO
+// ==========================================
 
-document.getElementById("loginForm").addEventListener("submit", function (e) {
+const API =
+    "https://script.google.com/macros/s/AKfycbw5jFPujmLMWDt7VzGlppmja1IHCLtQQzwUoWucgSHpZcTfJepJhGCXEpWJsSDb_IwhUA/exec";
 
-    e.preventDefault();
 
-    fazerLogin();
+// ==========================================
+// LOGIN
+// ==========================================
 
-});
+document
+    .getElementById("loginForm")
+    .addEventListener("submit", function (e) {
+
+        e.preventDefault();
+
+        fazerLogin();
+
+    });
+
+
+// ==========================================
+// FAZER LOGIN
+// ==========================================
 
 async function fazerLogin() {
 
-    const senha = document.getElementById("senha").value;
+    const senha =
+        document.getElementById("senha").value.trim();
 
-    const erro = document.getElementById("erro");
+    const erro =
+        document.getElementById("erro");
 
     erro.textContent = "";
 
-    const form = new URLSearchParams();
+    if (!senha) {
+
+        erro.textContent =
+            "Digite a senha.";
+
+        return;
+
+    }
+
+    const form =
+        new URLSearchParams();
 
     form.append("senha", senha);
 
     try {
 
-        const resposta = await fetch(API + "?acao=login", {
+        const resposta =
+            await fetch(
+                API + "?acao=login",
+                {
+                    method: "POST",
+                    body: form
+                }
+            );
 
-            method: "POST",
+        if (!resposta.ok) {
 
-            body: form
+            throw new Error(
+                "Erro HTTP: " + resposta.status
+            );
 
-        });
+        }
 
-        const dados = await resposta.json();
+        const dados =
+            await resposta.json();
 
         if (!dados.sucesso) {
 
-            erro.textContent = dados.mensagem;
+            erro.textContent =
+                dados.mensagem || "Senha inválida.";
 
             return;
 
         }
 
-        localStorage.setItem("tokenAdmin", dados.token);
+        // Guarda o token somente após login válido
+        localStorage.setItem(
+            "tokenAdmin",
+            dados.token
+        );
 
-        window.location.href = "dashboard.html";
+        // Vai para o painel
+        window.location.href =
+            "dashboard.html";
 
     } catch (e) {
 
-        console.error(e);
+        console.error(
+            "Erro no login:",
+            e
+        );
 
-        erro.textContent = "Erro ao conectar.";
+        erro.textContent =
+            "Erro ao conectar ao servidor.";
 
     }
 
