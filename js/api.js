@@ -2,8 +2,7 @@
 // CONFIGURAÇÃO DA API
 // ==========================================
 
-const API_URL =
-    "https://script.google.com/macros/s/AKfycbw5jFPujmLMWDt7VzGlppmja1IHCLtQQzwUoWucgSHpZcTfJepJhGCXEpWJsSDb_IwhUA/exec";
+const API_URL = CONFIG.API;
 
 
 // ==========================================
@@ -19,34 +18,16 @@ async function buscarProdutos() {
         );
 
         if (!resposta.ok) {
-
-            throw new Error(
-                "Erro HTTP: " + resposta.status
-            );
-
+            throw new Error("Erro HTTP: " + resposta.status);
         }
 
         const dados = await resposta.json();
 
-        if (Array.isArray(dados)) {
-
-            return dados;
-
-        }
-
-        console.error(
-            "Resposta inesperada da API:",
-            dados
-        );
-
-        return [];
+        return Array.isArray(dados) ? dados : [];
 
     } catch (erro) {
 
-        console.error(
-            "Erro ao buscar produtos:",
-            erro
-        );
+        console.error("Erro ao buscar produtos:", erro);
 
         return [];
 
@@ -61,18 +42,11 @@ async function buscarProdutos() {
 
 async function buscarProdutosAdmin() {
 
-    const token =
-        localStorage.getItem("tokenAdmin");
-
+    const token = localStorage.getItem("tokenAdmin");
 
     if (!token) {
-
-        throw new Error(
-            "Sessão não encontrada."
-        );
-
+        throw new Error("Sessão não encontrada.");
     }
-
 
     try {
 
@@ -82,35 +56,23 @@ async function buscarProdutosAdmin() {
             encodeURIComponent(token)
         );
 
-
         if (!resposta.ok) {
-
-            throw new Error(
-                "Erro HTTP: " + resposta.status
-            );
-
+            throw new Error("Erro HTTP: " + resposta.status);
         }
 
-
-        const dados =
-            await resposta.json();
-
+        const dados = await resposta.json();
 
         if (!dados.sucesso) {
 
             if (dados.autenticado === false) {
 
-                localStorage.removeItem(
-                    "tokenAdmin"
-                );
+                localStorage.removeItem("tokenAdmin");
 
-                window.location.href =
-                    "admin.html";
+                window.location.href = "admin.html";
 
                 return [];
 
             }
-
 
             throw new Error(
                 dados.mensagem ||
@@ -119,9 +81,7 @@ async function buscarProdutosAdmin() {
 
         }
 
-
         return dados.produtos || [];
-
 
     } catch (erro) {
 
@@ -133,5 +93,152 @@ async function buscarProdutosAdmin() {
         throw erro;
 
     }
+
+}
+
+
+// ==========================================
+// FUNÇÃO GENÉRICA PARA POST
+// ==========================================
+
+async function enviarAdmin(dados) {
+
+    const token = localStorage.getItem("tokenAdmin");
+
+    if (!token) {
+        throw new Error("Sessão expirada.");
+    }
+
+    dados.token = token;
+
+    const parametros = new URLSearchParams();
+
+    Object.keys(dados).forEach(function(chave) {
+
+        parametros.append(
+            chave,
+            dados[chave] ?? ""
+        );
+
+    });
+
+    const resposta = await fetch(API_URL, {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type":
+                "application/x-www-form-urlencoded;charset=UTF-8"
+        },
+
+        body: parametros.toString()
+
+    });
+
+    if (!resposta.ok) {
+
+        throw new Error(
+            "Erro HTTP: " + resposta.status
+        );
+
+    }
+
+    const resultado = await resposta.json();
+
+    if (
+        resultado.autenticado === false
+    ) {
+
+        localStorage.removeItem("tokenAdmin");
+
+        window.location.href = "admin.html";
+
+        return resultado;
+
+    }
+
+    if (!resultado.sucesso) {
+
+        throw new Error(
+            resultado.mensagem ||
+            "Erro na operação."
+        );
+
+    }
+
+    return resultado;
+
+}
+
+
+// ==========================================
+// CRIAR PRODUTO
+// ==========================================
+
+async function criarProduto(produto) {
+
+    return await enviarAdmin({
+
+        acao: "criarProduto",
+
+        nome: produto.Nome,
+
+        categoria: produto.Categoria,
+
+        preco: produto.Preço,
+
+        imagem: produto.Imagem,
+
+        disponivel: produto.Disponível,
+
+        destaque: produto.Destaque
+
+    });
+
+}
+
+
+// ==========================================
+// EDITAR PRODUTO
+// ==========================================
+
+async function atualizarProduto(linha, produto) {
+
+    return await enviarAdmin({
+
+        acao: "editarProduto",
+
+        linha: linha,
+
+        nome: produto.Nome,
+
+        categoria: produto.Categoria,
+
+        preco: produto.Preço,
+
+        imagem: produto.Imagem,
+
+        disponivel: produto.Disponível,
+
+        destaque: produto.Destaque
+
+    });
+
+}
+
+
+// ==========================================
+// EXCLUIR PRODUTO
+// ==========================================
+
+async function excluirProduto(linha) {
+
+    return await enviarAdmin({
+
+        acao: "excluirProduto",
+
+        linha: linha
+
+    });
 
 }

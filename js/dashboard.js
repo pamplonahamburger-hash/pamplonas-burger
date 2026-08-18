@@ -12,7 +12,14 @@ if (!tokenAdmin) {
 
 
 // ==========================================
-// DASHBOARD
+// VARIÁVEIS
+// ==========================================
+
+let produtosAtuais = [];
+
+
+// ==========================================
+// CARREGAR PRODUTOS
 // ==========================================
 
 async function carregarProdutos() {
@@ -20,28 +27,22 @@ async function carregarProdutos() {
     const tbody =
         document.getElementById("listaProdutos");
 
-
     tbody.innerHTML = `
         <tr>
             <td colspan="7">
-                Carregando...
+                Carregando produtos...
             </td>
         </tr>
     `;
 
-
     try {
 
-        // IMPORTANTE:
-        // O dashboard usa a função protegida.
-        const produtos =
+        produtosAtuais =
             await buscarProdutosAdmin();
-
 
         tbody.innerHTML = "";
 
-
-        if (!produtos.length) {
+        if (!produtosAtuais.length) {
 
             tbody.innerHTML = `
                 <tr>
@@ -55,31 +56,52 @@ async function carregarProdutos() {
 
         }
 
-
-        produtos.forEach((produto, indice) => {
-
-            const imagem =
-                produto.Imagem || "";
-
+        produtosAtuais.forEach(function(produto, indice) {
 
             const linha =
                 document.createElement("tr");
 
+            const imagem =
+                produto.Imagem || "";
+
+            const disponivel =
+                String(produto["Disponível"])
+                    .toLowerCase() === "sim";
+
+            const destaque =
+                String(produto.Destaque)
+                    .toLowerCase() === "sim";
+
+            /*
+             * A API devolve a linha real da planilha.
+             * Se não existir, usamos o índice + 2.
+             */
+            const numeroLinha =
+                produto._linha ||
+                (indice + 2);
 
             linha.innerHTML = `
 
                 <td>
 
-                    <img
-                        src="${imagem}"
-                        alt="${produto.Nome || "Produto"}"
-                        style="
-                            width:70px;
-                            height:70px;
-                            object-fit:cover;
-                            border-radius:10px;
-                        "
-                    >
+                    ${
+                        imagem
+
+                        ? `
+                            <img
+                                src="${imagem}"
+                                alt="${produto.Nome || "Produto"}"
+                                style="
+                                    width:70px;
+                                    height:70px;
+                                    object-fit:cover;
+                                    border-radius:10px;
+                                "
+                            >
+                          `
+
+                        : "Sem imagem"
+                    }
 
                 </td>
 
@@ -92,57 +114,74 @@ async function carregarProdutos() {
                 </td>
 
                 <td>
-                    R$ ${produto.Preço || "0,00"}
-                </td>
-
-                <td>
-                    ${produto["Disponível"] || ""}
-                </td>
-
-                <td>
-                    ${produto.Destaque || ""}
+                    R$ ${formatarPreco(produto.Preço)}
                 </td>
 
                 <td>
 
                     <button
                         type="button"
-                        onclick="editar(${indice})">
+                        onclick="alternarDisponibilidade(
+                            ${numeroLinha},
+                            ${indice}
+                        )"
+                    >
+                        ${disponivel ? "✅ Sim" : "❌ Não"}
+                    </button>
 
+                </td>
+
+                <td>
+
+                    <button
+                        type="button"
+                        onclick="alternarDestaque(
+                            ${numeroLinha},
+                            ${indice}
+                        )"
+                    >
+                        ${destaque ? "⭐ Sim" : "Não"}
+                    </button>
+
+                </td>
+
+                <td>
+
+                    <button
+                        type="button"
+                        onclick="editar(${indice})"
+                    >
                         ✏️
-
                     </button>
 
                     <button
                         type="button"
-                        onclick="excluir(${indice})">
-
+                        onclick="excluir(${numeroLinha})"
+                    >
                         🗑️
-
                     </button>
 
                 </td>
 
             `;
 
-
             tbody.appendChild(linha);
 
         });
 
-
-    } catch (e) {
+    } catch (erro) {
 
         console.error(
             "Erro no dashboard:",
-            e
+            erro
         );
-
 
         tbody.innerHTML = `
             <tr>
                 <td colspan="7">
                     Erro ao carregar produtos.
+                    <br>
+                    ${erro.message}
                 </td>
             </tr>
         `;
@@ -153,16 +192,226 @@ async function carregarProdutos() {
 
 
 // ==========================================
+// FORMATAR PREÇO
+// ==========================================
+
+function formatarPreco(valor) {
+
+    if (
+        valor === null ||
+        valor === undefined ||
+        valor === ""
+    ) {
+        return "0,00";
+    }
+
+    const numero =
+        Number(
+            String(valor)
+                .replace("R$", "")
+                .replace(",", ".")
+                .trim()
+        );
+
+    if (isNaN(numero)) {
+        return valor;
+    }
+
+    return numero.toFixed(2).replace(".", ",");
+
+}
+
+
+// ==========================================
+// NOVO PRODUTO
+// ==========================================
+
+async function novoProduto() {
+
+    const nome =
+        prompt("Nome do produto:");
+
+    if (!nome) {
+        return;
+    }
+
+    const categoria =
+        prompt("Categoria:");
+
+    if (!categoria) {
+        return;
+    }
+
+    const preco =
+        prompt("Preço:");
+
+    if (!preco) {
+        return;
+    }
+
+    const imagem =
+        prompt("URL da imagem:");
+
+    const disponivel =
+        confirm(
+            "O produto está disponível?"
+        )
+            ? "Sim"
+            : "Não";
+
+    const destaque =
+        confirm(
+            "Deseja colocar o produto em destaque?"
+        )
+            ? "Sim"
+            : "Não";
+
+    try {
+
+        await criarProduto({
+
+            Nome: nome,
+
+            Categoria: categoria,
+
+            Preço: preco,
+
+            Imagem: imagem,
+
+            Disponível: disponivel,
+
+            Destaque: destaque
+
+        });
+
+        alert(
+            "Produto criado com sucesso!"
+        );
+
+        carregarProdutos();
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            "Erro ao criar produto:\n" +
+            erro.message
+        );
+
+    }
+
+}
+
+
+// ==========================================
 // EDITAR
 // ==========================================
 
-function editar(id) {
+async function editar(indice) {
 
-    alert(
-        "Editar produto " +
-        id +
-        " será implementado em seguida."
-    );
+    const produto =
+        produtosAtuais[indice];
+
+    if (!produto) {
+        return;
+    }
+
+    const linha =
+        produto._linha ||
+        (indice + 2);
+
+    const nome =
+        prompt(
+            "Nome do produto:",
+            produto.Nome || ""
+        );
+
+    if (nome === null) {
+        return;
+    }
+
+    const categoria =
+        prompt(
+            "Categoria:",
+            produto.Categoria || ""
+        );
+
+    if (categoria === null) {
+        return;
+    }
+
+    const preco =
+        prompt(
+            "Preço:",
+            produto.Preço || ""
+        );
+
+    if (preco === null) {
+        return;
+    }
+
+    const imagem =
+        prompt(
+            "URL da imagem:",
+            produto.Imagem || ""
+        );
+
+    if (imagem === null) {
+        return;
+    }
+
+    const disponivel =
+        confirm(
+            "Produto disponível?\n\nOK = Sim\nCancelar = Não"
+        )
+            ? "Sim"
+            : "Não";
+
+    const destaque =
+        confirm(
+            "Produto em destaque?\n\nOK = Sim\nCancelar = Não"
+        )
+            ? "Sim"
+            : "Não";
+
+    try {
+
+        await atualizarProduto(
+            linha,
+            {
+
+                Nome: nome,
+
+                Categoria: categoria,
+
+                Preço: preco,
+
+                Imagem: imagem,
+
+                Disponível: disponivel,
+
+                Destaque: destaque
+
+            }
+        );
+
+        alert(
+            "Produto atualizado com sucesso!"
+        );
+
+        carregarProdutos();
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            "Erro ao editar produto:\n" +
+            erro.message
+        );
+
+    }
 
 }
 
@@ -171,27 +420,177 @@ function editar(id) {
 // EXCLUIR
 // ==========================================
 
-function excluir(id) {
+async function excluir(linha) {
 
-    if (!confirm("Excluir este produto?")) {
-
+    if (
+        !confirm(
+            "Tem certeza que deseja excluir este produto?"
+        )
+    ) {
         return;
-
     }
 
+    try {
 
-    alert(
-        "A exclusão será implementada em seguida."
-    );
+        await excluirProduto(linha);
+
+        alert(
+            "Produto excluído com sucesso!"
+        );
+
+        carregarProdutos();
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            "Erro ao excluir produto:\n" +
+            erro.message
+        );
+
+    }
 
 }
 
 
 // ==========================================
-// INICIAR
+// ALTERAR DISPONIBILIDADE
+// ==========================================
+
+async function alternarDisponibilidade(
+    linha,
+    indice
+) {
+
+    const produto =
+        produtosAtuais[indice];
+
+    if (!produto) {
+        return;
+    }
+
+    const atual =
+        String(produto["Disponível"])
+            .toLowerCase() === "sim";
+
+    try {
+
+        await atualizarProduto(
+            linha,
+            {
+
+                Nome: produto.Nome,
+
+                Categoria: produto.Categoria,
+
+                Preço: produto.Preço,
+
+                Imagem: produto.Imagem,
+
+                Disponível:
+                    atual ? "Não" : "Sim",
+
+                Destaque:
+                    produto.Destaque
+
+            }
+        );
+
+        carregarProdutos();
+
+    } catch (erro) {
+
+        alert(
+            "Erro ao alterar disponibilidade:\n" +
+            erro.message
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// ALTERAR DESTAQUE
+// ==========================================
+
+async function alternarDestaque(
+    linha,
+    indice
+) {
+
+    const produto =
+        produtosAtuais[indice];
+
+    if (!produto) {
+        return;
+    }
+
+    const atual =
+        String(produto.Destaque)
+            .toLowerCase() === "sim";
+
+    try {
+
+        await atualizarProduto(
+            linha,
+            {
+
+                Nome: produto.Nome,
+
+                Categoria: produto.Categoria,
+
+                Preço: produto.Preço,
+
+                Imagem: produto.Imagem,
+
+                Disponível:
+                    produto["Disponível"],
+
+                Destaque:
+                    atual ? "Não" : "Sim"
+
+            }
+        );
+
+        carregarProdutos();
+
+    } catch (erro) {
+
+        alert(
+            "Erro ao alterar destaque:\n" +
+            erro.message
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// BOTÃO NOVO PRODUTO
 // ==========================================
 
 document.addEventListener(
     "DOMContentLoaded",
-    carregarProdutos
+    function() {
+
+        const botao =
+            document.getElementById(
+                "novoProduto"
+            );
+
+        if (botao) {
+
+            botao.addEventListener(
+                "click",
+                novoProduto
+            );
+
+        }
+
+        carregarProdutos();
+
+    }
 );
