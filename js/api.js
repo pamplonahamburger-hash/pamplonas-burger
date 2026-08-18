@@ -7,7 +7,7 @@ const API_URL =
 
 
 // ==========================================
-// BUSCAR PRODUTOS
+// BUSCAR PRODUTOS - SITE PÚBLICO
 // ==========================================
 
 async function buscarProdutos() {
@@ -28,7 +28,6 @@ async function buscarProdutos() {
 
         const dados = await resposta.json();
 
-        // A API pública retorna diretamente o array
         if (Array.isArray(dados)) {
 
             return dados;
@@ -50,6 +49,88 @@ async function buscarProdutos() {
         );
 
         return [];
+
+    }
+
+}
+
+
+// ==========================================
+// BUSCAR PRODUTOS - PAINEL ADMIN
+// ==========================================
+
+async function buscarProdutosAdmin() {
+
+    const token =
+        localStorage.getItem("tokenAdmin");
+
+
+    if (!token) {
+
+        throw new Error(
+            "Sessão não encontrada."
+        );
+
+    }
+
+
+    try {
+
+        const resposta = await fetch(
+            API_URL +
+            "?acao=listarAdmin&token=" +
+            encodeURIComponent(token)
+        );
+
+
+        if (!resposta.ok) {
+
+            throw new Error(
+                "Erro HTTP: " + resposta.status
+            );
+
+        }
+
+
+        const dados =
+            await resposta.json();
+
+
+        if (!dados.sucesso) {
+
+            if (dados.autenticado === false) {
+
+                localStorage.removeItem(
+                    "tokenAdmin"
+                );
+
+                window.location.href =
+                    "admin.html";
+
+                return [];
+
+            }
+
+
+            throw new Error(
+                dados.mensagem ||
+                "Erro ao carregar produtos."
+            );
+
+        }
+
+
+        return dados.produtos || [];
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao buscar produtos administrativos:",
+            erro
+        );
+
+        throw erro;
 
     }
 

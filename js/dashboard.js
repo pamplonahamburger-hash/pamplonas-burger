@@ -20,6 +20,7 @@ async function carregarProdutos() {
     const tbody =
         document.getElementById("listaProdutos");
 
+
     tbody.innerHTML = `
         <tr>
             <td colspan="7">
@@ -28,12 +29,17 @@ async function carregarProdutos() {
         </tr>
     `;
 
+
     try {
 
+        // IMPORTANTE:
+        // O dashboard usa a função protegida.
         const produtos =
-            await buscarProdutos();
+            await buscarProdutosAdmin();
+
 
         tbody.innerHTML = "";
+
 
         if (!produtos.length) {
 
@@ -49,13 +55,16 @@ async function carregarProdutos() {
 
         }
 
+
         produtos.forEach((produto, indice) => {
 
-            let imagem =
+            const imagem =
                 produto.Imagem || "";
+
 
             const linha =
                 document.createElement("tr");
+
 
             linha.innerHTML = `
 
@@ -116,13 +125,19 @@ async function carregarProdutos() {
 
             `;
 
+
             tbody.appendChild(linha);
 
         });
 
+
     } catch (e) {
 
-        console.error(e);
+        console.error(
+            "Erro no dashboard:",
+            e
+        );
+
 
         tbody.innerHTML = `
             <tr>
@@ -144,7 +159,8 @@ async function carregarProdutos() {
 function editar(id) {
 
     alert(
-        "Editar produto " + id +
+        "Editar produto " +
+        id +
         " será implementado em seguida."
     );
 
@@ -162,6 +178,7 @@ function excluir(id) {
         return;
 
     }
+
 
     alert(
         "A exclusão será implementada em seguida."

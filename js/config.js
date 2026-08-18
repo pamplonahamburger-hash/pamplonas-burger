@@ -1,6 +1,6 @@
 const CONFIG = {
 
-    WHATSAPP: "5553999204707",
+    WHATSAPP: "5553999786400",
 
     API: "https://script.google.com/macros/s/AKfycbw5jFPujmLMWDt7VzGlppmja1IHCLtQQzwUoWucgSHpZcTfJepJhGCXEpWJsSDb_IwhUA/exec",
 
