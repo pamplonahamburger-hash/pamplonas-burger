@@ -242,3 +242,40 @@ async function excluirProduto(linha) {
     });
 
 }
+
+// ==========================================
+// ALTERAR DISPONIBILIDADE
+// ==========================================
+
+async function alterarDisponibilidade(linha, valor) {
+
+    return await enviarAdmin({
+
+        acao: "alterarDisponibilidade",
+
+        linha: linha,
+
+        valor: valor
+
+    });
+
+}
+
+
+// ==========================================
+// ALTERAR DESTAQUE
+// ==========================================
+
+async function alterarDestaque(linha, valor) {
+
+    return await enviarAdmin({
+
+        acao: "alterarDestaque",
+
+        linha: linha,
+
+        valor: valor
+
+    });
+
+}

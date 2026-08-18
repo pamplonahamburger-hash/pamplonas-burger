@@ -472,34 +472,24 @@ async function alternarDisponibilidade(
 
     const atual =
         String(produto["Disponível"])
+            .trim()
             .toLowerCase() === "sim";
+
+    const novoValor =
+        atual ? "Não" : "Sim";
 
     try {
 
-        await atualizarProduto(
+        await alterarDisponibilidade(
             linha,
-            {
-
-                Nome: produto.Nome,
-
-                Categoria: produto.Categoria,
-
-                Preço: produto.Preço,
-
-                Imagem: produto.Imagem,
-
-                Disponível:
-                    atual ? "Não" : "Sim",
-
-                Destaque:
-                    produto.Destaque
-
-            }
+            novoValor
         );
 
-        carregarProdutos();
+        await carregarProdutos();
 
     } catch (erro) {
+
+        console.error(erro);
 
         alert(
             "Erro ao alterar disponibilidade:\n" +
@@ -529,34 +519,24 @@ async function alternarDestaque(
 
     const atual =
         String(produto.Destaque)
+            .trim()
             .toLowerCase() === "sim";
+
+    const novoValor =
+        atual ? "Não" : "Sim";
 
     try {
 
-        await atualizarProduto(
+        await alterarDestaque(
             linha,
-            {
-
-                Nome: produto.Nome,
-
-                Categoria: produto.Categoria,
-
-                Preço: produto.Preço,
-
-                Imagem: produto.Imagem,
-
-                Disponível:
-                    produto["Disponível"],
-
-                Destaque:
-                    atual ? "Não" : "Sim"
-
-            }
+            novoValor
         );
 
-        carregarProdutos();
+        await carregarProdutos();
 
     } catch (erro) {
+
+        console.error(erro);
 
         alert(
             "Erro ao alterar destaque:\n" +
@@ -566,7 +546,6 @@ async function alternarDestaque(
     }
 
 }
-
 
 // ==========================================
 // BOTÃO NOVO PRODUTO
