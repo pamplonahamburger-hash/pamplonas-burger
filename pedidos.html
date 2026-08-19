@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Novo Pedido - Pamplona's Burger</title>
+
+    <link
+        rel="stylesheet"
+        href="css/pedidos.css">
+
+</head>
+
+<body>
+
+<header class="topo">
+
+    <div>
+        <h1>🍔 Novo Pedido</h1>
+        <p>Pamplona's Burger</p>
+    </div>
+
+    <a href="dashboard.html">
+        ← Painel
+    </a>
+
+</header>
+
+
+<main class="pagina">
+
+    <!-- CLIENTE -->
+
+    <section class="bloco">
+
+        <h2>👤 Dados do Cliente</h2>
+
+        <div class="campos">
+
+            <div>
+                <label>Nome</label>
+
+                <input
+                    id="cliente"
+                    type="text"
+                    placeholder="Nome do cliente">
+            </div>
+
+            <div>
+                <label>Telefone</label>
+
+                <input
+                    id="telefone"
+                    type="tel"
+                    placeholder="Telefone">
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- PRODUTOS -->
+
+    <section class="bloco">
+
+        <h2>🍔 Produtos</h2>
+
+        <div
+            id="listaProdutos"
+            class="lista-produtos">
+
+            <p>Carregando produtos...</p>
+
+        </div>
+
+    </section>
+
+
+    <!-- CARRINHO -->
+
+    <section class="bloco">
+
+        <h2>🛒 Pedido</h2>
+
+        <div id="carrinho">
+
+            <p class="vazio">
+                Nenhum produto adicionado.
+            </p>
+
+        </div>
+
+        <div class="total">
+
+            <span>Total</span>
+
+            <strong id="total">
+                R$ 0,00
+            </strong>
+
+        </div>
+
+    </section>
+
+
+    <!-- ENTREGA -->
+
+    <section class="bloco">
+
+        <h2>🛵 Entrega</h2>
+
+        <label>Endereço</label>
+
+        <textarea
+            id="endereco"
+            rows="3"
+            placeholder="Rua, número, bairro..."></textarea>
+
+    </section>
+
+
+    <!-- PAGAMENTO -->
+
+    <section class="bloco">
+
+        <h2>💳 Pagamento</h2>
+
+        <div class="pagamentos">
+
+            <label>
+                <input
+                    type="radio"
+                    name="pagamento"
+                    value="PIX"
+                    checked>
+
+                PIX
+            </label>
+
+            <label>
+                <input
+                    type="radio"
+                    name="pagamento"
+                    value="Dinheiro">
+
+                Dinheiro
+            </label>
+
+            <label>
+                <input
+                    type="radio"
+                    name="pagamento"
+                    value="Cartão">
+
+                Cartão
+            </label>
+
+        </div>
+
+    </section>
+
+
+    <!-- OBSERVAÇÃO -->
+
+    <section class="bloco">
+
+        <h2>📝 Observações</h2>
+
+        <textarea
+            id="observacao"
+            rows="4"
+            placeholder="Ex.: X-Salada sem tomate..."></textarea>
+
+    </section>
+
+
+    <!-- ENVIAR -->
+
+    <section class="acao">
+
+        <button
+            id="enviarPedido"
+            type="button">
+
+            🖨️ ENVIAR PARA COZINHA
+
+        </button>
+
+    </section>
+
+</main>
+
+
+<script src="js/api.js"></script>
+
+<script src="js/pedidos.js"></script>
+
+</body>
+
+</html>
