@@ -418,7 +418,11 @@ document
     );
 
 
-function enviarPedido() {
+// ==========================================
+// ENVIAR PEDIDO PARA A API
+// ==========================================
+
+async function enviarPedido() {
 
     if (!carrinho.length) {
 
@@ -427,45 +431,46 @@ function enviarPedido() {
         );
 
         return;
-
     }
+
 
     const cliente =
         document
-            .getElementById(
-                "cliente"
-            )
+            .getElementById("cliente")
             .value
             .trim();
+
 
     const telefone =
         document
-            .getElementById(
-                "telefone"
-            )
+            .getElementById("telefone")
             .value
             .trim();
+
 
     const endereco =
         document
-            .getElementById(
-                "endereco"
-            )
+            .getElementById("endereco")
             .value
             .trim();
 
+
     const observacao =
         document
-            .getElementById(
-                "observacao"
-            )
+            .getElementById("observacao")
             .value
             .trim();
+
 
     const pagamento =
         document.querySelector(
             'input[name="pagamento"]:checked'
         )?.value || "";
+
+
+    // ------------------------------------------
+    // VALIDAÇÕES
+    // ------------------------------------------
 
     if (!cliente) {
 
@@ -474,8 +479,8 @@ function enviarPedido() {
         );
 
         return;
-
     }
+
 
     if (!telefone) {
 
@@ -484,49 +489,247 @@ function enviarPedido() {
         );
 
         return;
-
     }
 
-    const pedido = {
 
-        cliente,
+    // ------------------------------------------
+    // MONTAR ITENS
+    // ------------------------------------------
 
-        telefone,
+    const itens =
+        carrinho.map(item => ({
 
-        endereco,
+            nome:
+                item.produto.Nome,
 
-        pagamento,
+            quantidade:
+                item.quantidade,
 
-        observacao,
+            preco:
+                converterPreco(
+                    item.produto.Preço
+                )
 
-        itens:
-            carrinho.map(item => ({
-
-                nome:
-                    item.produto.Nome,
-
-                quantidade:
-                    item.quantidade,
-
-                preco:
-                    converterPreco(
-                        item.produto.Preço
-                    )
-
-            }))
-
-    };
+        }));
 
 
-    console.log(
-        "PEDIDO PRONTO:",
-        pedido
+    // ------------------------------------------
+    // FORMULÁRIO
+    // ------------------------------------------
+
+    const form =
+        new URLSearchParams();
+
+
+    form.append(
+        "token",
+        tokenAdmin
     );
 
 
-    alert(
-        "Pedido montado com sucesso!\n\n" +
-        "A próxima etapa será enviar este pedido para a fila da cozinha."
+    form.append(
+        "cliente",
+        cliente
     );
+
+
+    form.append(
+        "telefone",
+        telefone
+    );
+
+
+    form.append(
+        "endereco",
+        endereco
+    );
+
+
+    form.append(
+        "pagamento",
+        pagamento
+    );
+
+
+    form.append(
+        "observacao",
+        observacao
+    );
+
+
+    form.append(
+        "itens",
+        JSON.stringify(itens)
+    );
+
+
+    // ------------------------------------------
+    // BOTÃO
+    // ------------------------------------------
+
+    const botao =
+        document.getElementById(
+            "enviarPedido"
+        );
+
+
+    const textoOriginal =
+        botao.textContent;
+
+
+    botao.disabled = true;
+
+    botao.textContent =
+        "⏳ ENVIANDO...";
+
+
+    try {
+
+        // --------------------------------------
+        // ENVIAR PARA GOOGLE APPS SCRIPT
+        // --------------------------------------
+
+        const resposta =
+            await fetch(
+                CONFIG.API +
+                "?acao=criarPedido",
+                {
+                    method: "POST",
+                    body: form
+                }
+            );
+
+
+        if (!resposta.ok) {
+
+            throw new Error(
+                "Erro HTTP: " +
+                resposta.status
+            );
+
+        }
+
+
+        const dados =
+            await resposta.json();
+
+
+        console.log(
+            "Resposta da API:",
+            dados
+        );
+
+
+        // --------------------------------------
+        // SUCESSO
+        // --------------------------------------
+
+        if (dados.sucesso) {
+
+            alert(
+                "✅ PEDIDO #" +
+                dados.pedido.id +
+                " CRIADO COM SUCESSO!\n\n" +
+                "O pedido foi enviado para a fila da cozinha."
+            );
+
+
+            // Limpar pedido
+
+            carrinho = [];
+
+
+            document
+                .getElementById("cliente")
+                .value = "";
+
+
+            document
+                .getElementById("telefone")
+                .value = "";
+
+
+            document
+                .getElementById("endereco")
+                .value = "";
+
+
+            document
+                .getElementById("observacao")
+                .value = "";
+
+
+            document
+                .querySelector(
+                    'input[name="pagamento"][value="PIX"]'
+                )
+                .checked = true;
+
+
+            atualizarCarrinho();
+
+
+            return;
+        }
+
+
+        // --------------------------------------
+        // ERRO DA API
+        // --------------------------------------
+
+        if (
+            dados.autenticado === false
+        ) {
+
+            alert(
+                "⚠️ Sua sessão expirou.\n\n" +
+                "Faça login novamente."
+            );
+
+
+            localStorage.removeItem(
+                "tokenAdmin"
+            );
+
+
+            window.location.href =
+                "admin.html";
+
+
+            return;
+        }
+
+
+        alert(
+            "❌ " +
+            (
+                dados.mensagem ||
+                "Não foi possível criar o pedido."
+            )
+        );
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao criar pedido:",
+            erro
+        );
+
+
+        alert(
+            "❌ Erro ao enviar o pedido.\n\n" +
+            "Verifique sua conexão e tente novamente."
+        );
+
+
+    } finally {
+
+        botao.disabled = false;
+
+        botao.textContent =
+            textoOriginal;
+
+    }
 
 }
